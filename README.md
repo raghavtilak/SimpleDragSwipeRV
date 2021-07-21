@@ -1,11 +1,18 @@
 # SimpleDragSwipeRV
 Simple RecyclerView Adapter with Drag-Sort and Swipe Delete functionality.
+
+[![Generic badge](https://img.shields.io/badge/jitpack-1.0.0-green.svg)](https://shields.io/)
+
+# Demo 📱 #
+
+
 LinearLayout | HorizontalLayout | GridLayout  
 ---	     | ---              | --- 
 |<img src="https://user-images.githubusercontent.com/74963954/126496700-42364828-915c-485b-8db9-fc80712ebfc6.gif" width="300" height="650"/>|<img src="https://user-images.githubusercontent.com/74963954/126499705-e57764f6-31ab-4612-8567-93be2debf9d3.gif" width="300" height="650"/>|<img src="https://user-images.githubusercontent.com/74963954/126499749-a59dd8a8-6318-40e3-a3a3-2dc21c39fce1.gif" width="300" height="650"/>
 
 
-
+# Usage 🛠️ #
+## Dependency #
 > Step 1. Add the JitPack repository to your build file
 ```
 	allprojects {
@@ -21,4 +28,92 @@ LinearLayout | HorizontalLayout | GridLayout
 	dependencies {
 	        implementation 'com.github.raghavtilak:SimpleDragSwipeRV:Tag'
 	}
+```
+## Model Class #
+```
+public class UserModel {
+    private String name;
+    private String phone;
+    private String country;
+
+    public UserModel(String name, String phone, String country) {
+        this.name = name;
+        this.phone = phone;
+        this.country = country;
+    }
+    ....
+}    
+```
+## RecyclerView Adapter #
+```
+public class RVAdapter extends DragSwipeAdapter<UserModel> {
+
+
+    public RVAdapter(@NonNull Context context, List<UserModel> datas, int itemLayoutId, RecyclerView recyclerView, boolean isCanDrag, boolean isCanSwipe, int displayMode, int itemSpacing, OnItemClick onItemClickListener) {
+        super(context, datas, itemLayoutId, recyclerView, isCanDrag, isCanSwipe, displayMode, itemSpacing, onItemClickListener);
+    }
+
+    @Override
+    protected void bindView(UserModel item, DragSwipeAdapter.ViewHolder viewHolder) {
+        if(item!=null){
+            TextView name=(TextView)viewHolder.getView(R.id.textViewName);
+            TextView phone=(TextView)viewHolder.getView(R.id.textViewPhone);
+            TextView country=(TextView)viewHolder.getView(R.id.textViewCountry);
+            name.setText(item.getName());
+            phone.setText(item.getPhone());
+            country.setText(item.getCountry());
+        }
+    }
+
+    @Override
+    public void onItemSwiped() {
+
+    }
+
+    @Override
+    public void onItemMoved() {
+
+    }
+}
+```
+## OnItemClickListener #
+```
+public class MainActivity extends AppCompatActivity implements DragSwipeAdapter.OnItemClick<UserModel> {
+	...
+	
+   @Override
+    public void onClick(View view, int position, UserModel item) {
+        ...
+    }
+    
+        ...
+}
+```
+
+## Attach Adapter to RecyclerView
+```
+...
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        recyclerView=findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+
+        userList=new ArrayList<>();
+        loadData();
+        listAdapter = new RVAdapter(this,userList,R.layout.item_layout,
+                recyclerView,
+                true,false,RVAdapter.VERTICAL,
+                16,this);
+    }
+    ...
+```
+# Constructor #
+```
+    public DragSwipeAdapter(@NonNull Context context, List<T> datas, int itemLayoutId,
+                            RecyclerView recyclerView,
+                            boolean isCanDrag, boolean isCanSwipe, int displayMode,
+                            int itemSpacing, OnItemClick onItemClickListener)
 ```
