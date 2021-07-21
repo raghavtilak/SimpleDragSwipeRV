@@ -30,7 +30,7 @@ LinearLayout | HorizontalLayout | GridLayout
 >Step 2. Add the dependency
 ```
 	dependencies {
-	        implementation 'com.github.raghavtilak:SimpleDragSwipeRV:Tag'
+	        implementation 'com.github.raghavtilak:SimpleDragSwipeRV:1.0.0'
 	}
 ```
 ## Model Class #
