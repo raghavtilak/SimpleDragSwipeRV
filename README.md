@@ -1,7 +1,11 @@
-# SimpleDragSwipeRV
+# SimpleDragSwipeAdapter
 Simple RecyclerView Adapter with Drag-Sort and Swipe Delete functionality.
 
 [![Generic badge](https://img.shields.io/badge/jitpack-1.0.0-green.svg)](https://shields.io/)
+
+### Functionality #
+1. Swipe UP/DOWN (Horizontal) Swipe RIGHT/LEFT (Vertical) to remove an item.
+2. LongPress and Drag to sort items in RecyclerView.
 
 # Demo 📱 #
 
