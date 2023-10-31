@@ -1,50 +1,52 @@
-package com.raghav.simpledragswiperv;
+package com.raghav.simpledragswiperv
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.raghav.library.DragSwipeAdapter.OnItemClick
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
-
-import com.raghav.library.DragSwipeAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity implements DragSwipeAdapter.OnItemClick<UserModel> {
-
-    RecyclerView recyclerView;
-    RVAdapter listAdapter;
-    List<UserModel> userList;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        recyclerView=findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-
-        userList=new ArrayList<>();
-        loadData();
-        listAdapter = new RVAdapter(this,userList,R.layout.item_layout,
-                recyclerView,
-                true,false,RVAdapter.VERTICAL,
-                16,this);
+class MainActivity : AppCompatActivity(), OnItemClick<UserModel?> {
+    private var recyclerView: RecyclerView? = null
+    private var listAdapter: RVAdapter? = null
+    private var userList: MutableList<UserModel>? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView?.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+        userList = ArrayList()
+        loadData()
+        listAdapter = RVAdapter(
+            this, userList, R.layout.item_layout,
+            recyclerView,
+            true, false, RVAdapter.VERTICAL,
+            16, this
+        )
     }
 
-    private void loadData(){
-        userList.add(new UserModel("Raghav","8619146260","India"));
-        userList.add(new UserModel("Jack","524575","UK"));
-        userList.add(new UserModel("Tilak","995036482","India"));
-        userList.add(new UserModel("Monica","514894","USA"));
-        userList.add(new UserModel("Hayat","+1248546","Istanbul"));
+    private fun loadData() {
+        userList?.apply {
+            add(UserModel("Raghav", "8619146260", "India"))
+            add(UserModel("Jack", "524575", "UK"))
+            add(UserModel("Tilak", "995036482", "India"))
+            add(UserModel("Monica", "514894", "USA"))
+            add(UserModel("Hayat", "+1248546", "Istanbul"))
+        }
     }
 
-    @Override
-    public void onClick(View view, int position, UserModel item) {
-        Toast.makeText(this, position+"\n"+item.getName(), Toast.LENGTH_SHORT).show();
+    override fun onClick(view: View?, position: Int, item: UserModel?) {
+        Toast.makeText(
+            this, """
+     $position
+     ${item?.name}
+     """.trimIndent(), Toast.LENGTH_SHORT
+        ).show()
     }
 }

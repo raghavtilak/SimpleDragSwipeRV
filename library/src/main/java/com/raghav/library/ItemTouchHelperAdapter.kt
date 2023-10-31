@@ -1,11 +1,10 @@
-package com.raghav.library;
+package com.raghav.library
 
-public interface ItemTouchHelperAdapter {
-
+interface ItemTouchHelperAdapter {
     /**
      * @param fromPosition starting position
      * @param toPosition The location of the move
      */
-    void onMove(int fromPosition, int toPosition);
-    void onSwipe(int position);
+    fun onMove(fromPosition: Int, toPosition: Int)
+    fun onSwipe(position: Int)
 }

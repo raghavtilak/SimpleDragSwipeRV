@@ -1,177 +1,150 @@
-package com.raghav.library;
+package com.raghav.library
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import java.util.Collections
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
+abstract class DragSwipeAdapter<T>(
+    val context: Context, datas: MutableList<T?>?, itemLayoutId: Int,
+    recyclerView: RecyclerView,
+    isCanDrag: Boolean, isCanSwipe: Boolean, displayMode: Int,
+    itemSpacing: Int, onItemClickListener: OnItemClick<*>?
+) : RecyclerView.Adapter<DragSwipeAdapter<T>.ViewHolder>(), ItemTouchHelperAdapter {
+    private var items: MutableList<T?>?
+    private var listener: OnItemClick<T?>?
+    private val layoutId: Int
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public abstract class DragSwipeAdapter<T>
-        extends RecyclerView.Adapter<DragSwipeAdapter.ViewHolder>
-        implements ItemTouchHelperAdapter{
-
-    public static final int HORIZONTAL = 0;
-    public static final int VERTICAL = 1;
-    public static final int GRID = 2;
-
-    private List<T> items;
-    private Context context;
-    private OnItemClick<T> listener;
-    private int layoutId;
-
-    public interface OnItemClick<T> {
-        void onClick(View view, int position, T item);
+    interface OnItemClick<T> {
+        fun onClick(view: View?, position: Int, item: T)
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private Map<Integer, View> views;
+    inner class ViewHolder(view: View, listener: OnItemClick<*>?) : RecyclerView.ViewHolder(view),
+        View.OnClickListener {
+        private val views: MutableMap<Int, View>
 
-        public ViewHolder(View view, OnItemClick listener) {
-            super(view);
-            views = new HashMap<>();
-            views.put(0, view);
-
-            if (listener != null)
-                view.setOnClickListener(this);
+        init {
+            views = HashMap()
+            views[0] = view
+            if (listener != null) view.setOnClickListener(this)
         }
 
-        @Override
-        public void onClick(View view) {
-            if (listener != null)
-                listener.onClick(view, getAdapterPosition(), getItem(getAdapterPosition()));
+        override fun onClick(view: View) {
+            if (listener != null) listener!!.onClick(
+                view,
+                adapterPosition,
+                getItem(adapterPosition)
+            )
         }
 
-        public void initViewList(int[] idList) {
-            for (int id : idList)
-                initViewById(id);
+        fun initViewList(idList: IntArray) {
+            for (id in idList) initViewById(id)
         }
 
-        public void initViewById(int id) {
-            View view = (getView() != null ? getView().findViewById(id) : null);
-
-            if (view != null)
-                views.put(id, view);
+        fun initViewById(id: Int) {
+            val view = if (view != null) view!!.findViewById<View>(id) else null
+            if (view != null) views[id] = view
         }
 
-        public View getView() {
-            return getView(0);
-        }
+        val view: View?
+            get() = getView(0)
 
-        public View getView(int id) {
-            if (views.containsKey(id))
-                return views.get(id);
-            else
-                initViewById(id);
-
-            return views.get(id);
+        fun getView(id: Int): View? {
+            if (views.containsKey(id)) return views[id] else initViewById(id)
+            return views[id]
         }
     }
 
-//    protected abstract View createView(Context context, ViewGroup viewGroup, int viewType);
+    //    protected abstract View createView(Context context, ViewGroup viewGroup, int viewType);
+    protected abstract fun bindView(item: T?, viewHolder: ViewHolder?)
 
-    protected abstract void bindView(T item, DragSwipeAdapter.ViewHolder viewHolder);
-
-
-    public DragSwipeAdapter(@NonNull Context context, List<T> datas, int itemLayoutId,
-                            RecyclerView recyclerView,
-                            boolean isCanDrag, boolean isCanSwipe, int displayMode,
-                            int itemSpacing, OnItemClick onItemClickListener) {
-        this.context=context;
-        this.items =datas;
-        this.listener=onItemClickListener;
-        this.layoutId=itemLayoutId;
-
-        recyclerView.setAdapter(this);
-
-        ItemTouchHelperCallback helperCallback=new ItemTouchHelperCallback(this);
-        helperCallback.setSwipeEnable(isCanSwipe);
-        helperCallback.setDragEnable(isCanDrag);
-        ItemTouchHelper itemTouchHelper=new ItemTouchHelper(helperCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-        recyclerView.addItemDecoration(new EqualSpacingItemDecoration(itemSpacing, displayMode)); // 16px. In practice, you'll want to use getDimensionPixelSize
+    init {
+        items = datas
+        listener = onItemClickListener as OnItemClick<T?>?
+        layoutId = itemLayoutId
+        recyclerView.adapter = this
+        val helperCallback = ItemTouchHelperCallback(this)
+        helperCallback.setSwipeEnable(isCanSwipe)
+        helperCallback.setDragEnable(isCanDrag)
+        val itemTouchHelper = ItemTouchHelper(helperCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+        recyclerView.addItemDecoration(
+            EqualSpacingItemDecoration(
+                itemSpacing,
+                displayMode
+            )
+        ) // 16px. In practice, you'll want to use getDimensionPixelSize
     }
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(layoutId, viewGroup, false);
-        ViewHolder holder = new ViewHolder(view,listener);
-        return holder;
+    override fun onCreateViewHolder(
+        viewGroup: ViewGroup,
+        viewType: Int
+    ): ViewHolder {
+        val view =
+            LayoutInflater.from(viewGroup.context).inflate(layoutId, viewGroup, false)
+        return ViewHolder(view, listener)
     }
 
-    @Override
-    public void onBindViewHolder(DragSwipeAdapter.ViewHolder holder, int position) {
-        bindView(getItem(position), holder);
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        bindView(getItem(position), holder)
     }
 
-    @Override
-    public int getItemCount() {
-        return items.size();
+    override fun getItemCount(): Int {
+        return items!!.size
     }
 
-    public T getItem(int index) {
-        return ((items != null && index < items.size()) ? items.get(index) : null);
+    fun getItem(index: Int): T? {
+        return if (items != null && index < items!!.size) items!![index] else null
     }
 
-    public Context getContext() {
-        return context;
+    fun setList(list: MutableList<T?>?) {
+        items = list
     }
 
-    public void setList(List<T> list) {
-        items = list;
+    val list: List<T?>?
+        get() = items
+
+    fun setClickListener(listener: OnItemClick<*>?) {
+        this.listener = listener as OnItemClick<T?>?
     }
 
-    public List<T> getList() {
-        return items;
+    fun addAll(list: List<T?>?) {
+        items!!.addAll(list!!)
+        notifyDataSetChanged()
     }
 
-    public void setClickListener(OnItemClick listener) {
-        this.listener = listener;
+    fun reset() {
+        items!!.clear()
+        notifyDataSetChanged()
     }
 
-    public void addAll(List<T> list) {
-        items.addAll(list);
-        notifyDataSetChanged();
-    }
-
-    public void reset() {
-        items.clear();
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void onMove(int fromPosition, int toPosition) {
+    override fun onMove(fromPosition: Int, toPosition: Int) {
         /**
          * Move to the original array data here
          */
-        Collections.swap(items, fromPosition, toPosition);
+        Collections.swap(items, fromPosition, toPosition)
         /**
          * Notification data movement
          */
-        notifyItemMoved(fromPosition, toPosition);
-
-        onItemMoved();
+        notifyItemMoved(fromPosition, toPosition)
+        onItemMoved()
     }
-    @Override
-    public void onSwipe(int position) {
+
+    override fun onSwipe(position: Int) {
         /**
          * Original data removal data
          */
-        items.remove(position);
+        items!!.removeAt(position)
         /**
          * Notification removal
          */
-        notifyItemRemoved(position);
-
-        onItemSwiped();
+        notifyItemRemoved(position)
+        onItemSwiped()
     }
-    public abstract void onItemSwiped();
-    public abstract void onItemMoved();
+
+    abstract fun onItemSwiped()
+    abstract fun onItemMoved()
 }

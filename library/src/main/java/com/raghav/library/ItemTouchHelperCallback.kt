@@ -1,30 +1,31 @@
-package com.raghav.library;
+package com.raghav.library
 
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
-public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
+class ItemTouchHelperCallback : ItemTouchHelper.Callback {
+    private val mAdapter: ItemTouchHelperAdapter
 
-    private final ItemTouchHelperAdapter mAdapter;
     /**
      * Can you drag and drop?
      */
-    private boolean isCanDrag = false;
+    private var isCanDrag = false
+
     /**
      * Can it be slid
      */
-    private boolean isCanSwipe = false;
+    private var isCanSwipe = false
 
-    public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
-        mAdapter = adapter;
+    constructor(adapter: ItemTouchHelperAdapter) {
+        mAdapter = adapter
     }
 
-    public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter, boolean canDrag, boolean canSwipe) {
-        mAdapter = adapter;
-        this.isCanDrag = canDrag;
-        this.isCanSwipe = canSwipe;
+    constructor(adapter: ItemTouchHelperAdapter, canDrag: Boolean, canSwipe: Boolean) {
+        mAdapter = adapter
+        isCanDrag = canDrag
+        isCanSwipe = canSwipe
     }
 
     /**
@@ -32,8 +33,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      *
      * @param canDrag is true, no false
      */
-    public void setDragEnable(boolean canDrag) {
-        isCanDrag = canDrag;
+    fun setDragEnable(canDrag: Boolean) {
+        isCanDrag = canDrag
     }
 
     /**
@@ -41,26 +42,24 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      *
      * @param canSwipe is true, no false
      */
-    public void setSwipeEnable(boolean canSwipe) {
-        isCanSwipe = canSwipe;
+    fun setSwipeEnable(canSwipe: Boolean) {
+        isCanSwipe = canSwipe
     }
 
     /**
      * Can the item be dragged when the item is long pressed?
      * @return
      */
-    @Override
-    public boolean isLongPressDragEnabled() {
-        return isCanDrag;
+    override fun isLongPressDragEnabled(): Boolean {
+        return isCanDrag
     }
 
     /**
      * Whether the Item can be slid (H: slide left and right, V: slide up and down)
      * @return
      */
-    @Override
-    public boolean isItemViewSwipeEnabled() {
-        return isCanSwipe;
+    override fun isItemViewSwipeEnabled(): Boolean {
+        return isCanSwipe
     }
 
     /**
@@ -69,33 +68,34 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      * @param viewHolder
      * @return
      */
-    @Override
-    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        if (layoutManager instanceof GridLayoutManager) {// GridLayoutManager
+    override fun getMovementFlags(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder
+    ): Int {
+        val layoutManager = recyclerView.layoutManager
+        if (layoutManager is GridLayoutManager) { // GridLayoutManager
             // flag If the value is 0, it is equivalent to this function being turned off.
-            int dragFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-            int swipeFlag = 0;
+            val dragFlag =
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT or ItemTouchHelper.UP or ItemTouchHelper.DOWN
+            val swipeFlag = 0
             // create make
-            return makeMovementFlags(dragFlag, swipeFlag);
-        } else if (layoutManager instanceof LinearLayoutManager) {// linearLayoutManager
-            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
-            int orientation = linearLayoutManager.getOrientation();
-
-            int dragFlag = 0;
-            int swipeFlag = 0;
+            return makeMovementFlags(dragFlag, swipeFlag)
+        } else if (layoutManager is LinearLayoutManager) { // linearLayoutManager
+            val orientation = layoutManager.orientation
+            var dragFlag = 0
+            var swipeFlag = 0
 
             // For the sake of easy understanding, it is equivalent to a horizontal ListView and a vertical ListView.
-            if (orientation == LinearLayoutManager.HORIZONTAL) {// If it is a horizontal layout
-                swipeFlag = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-                dragFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-            } else if (orientation == LinearLayoutManager.VERTICAL) {// If it is a vertical layout, equivalent to ListView
-                dragFlag = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-                swipeFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            if (orientation == LinearLayoutManager.HORIZONTAL) { // If it is a horizontal layout
+                swipeFlag = ItemTouchHelper.UP or ItemTouchHelper.DOWN
+                dragFlag = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            } else if (orientation == LinearLayoutManager.VERTICAL) { // If it is a vertical layout, equivalent to ListView
+                dragFlag = ItemTouchHelper.UP or ItemTouchHelper.DOWN
+                swipeFlag = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
             }
-            return makeMovementFlags(dragFlag, swipeFlag);
+            return makeMovementFlags(dragFlag, swipeFlag)
         }
-        return 0;
+        return 0
     }
 
     /**
@@ -105,22 +105,22 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      * @param target
      * @return
      */
-    @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
         /**
          * Callback
          */
-        mAdapter.onMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-        return true;
+        mAdapter.onMove(viewHolder.adapterPosition, target.adapterPosition)
+        return true
     }
 
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
         /**
          * Callback
          */
-        mAdapter.onSwipe(viewHolder.getAdapterPosition());
+        mAdapter.onSwipe(viewHolder.adapterPosition)
     }
-
-
 }
