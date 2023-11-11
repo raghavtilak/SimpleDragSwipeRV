@@ -1,5 +1,7 @@
 # SimpleDragSwipeAdapter
 Simple RecyclerView Adapter with Drag-Sort and Swipe Delete functionality.
+<br>
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/raghavtilak)
 
 [![Generic badge](https://img.shields.io/badge/jitpack-1.0.0-green.svg)](https://shields.io/)
 
